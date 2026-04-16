@@ -17,12 +17,11 @@
 /* ─── FUNDO DA TELA COM SOBREPOSIÇÃO PRETA 80% ─── */
 html,body{
   background-color: var(--bg);
-  /* Múltiplos backgrounds: Gradiente Preto 80% em cima, Imagem fundo.png embaixo */
   background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('fundo.png');
-  background-size: cover;             /* Preenche a tela toda */
-  background-position: center;        /* Centraliza */
+  background-size: cover;             
+  background-position: center;        
   background-repeat: no-repeat;
-  background-attachment: fixed;       /* Fundo fixo ao rolar */
+  background-attachment: fixed;       
   color:#e8e0d0;
   font-family:var(--FB);
   min-height:100vh;
@@ -61,11 +60,11 @@ html,body{
 .splash-container { position: fixed; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden; }
 .splash {
   position: absolute; bottom: 0; 
-  width: 30%; /* Tamanho fixo da arte */
+  width: 30%; 
   height: 60%; 
   background-size: contain; background-repeat: no-repeat; background-position: bottom;
   opacity: 0; 
-  transition: opacity 0.4s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
   filter: drop-shadow(0 0 20px rgba(0,0,0,0.9));
 }
 .splash.L { left: 0; background-position: bottom left; transform: translateX(-100px); }
@@ -89,7 +88,6 @@ html,body{
   content: ''; position: absolute; inset: 0; background-image: var(--bg-img, none); background-size: cover; background-position: center 25%; background-repeat: no-repeat; z-index: 1; transition: filter 0.5s ease, box-shadow 0.5s ease;
 }
 
-/* Inverte o Header do Guest */
 .pblock.R .p-rect::before { transform: scaleX(-1); }
 
 .pblock.L .p-rect { border-bottom: 3px solid var(--host) !important; align-items: flex-end; padding-right: 35px; }
@@ -235,7 +233,7 @@ html,body{
 
 <div class="ftr">
     <span>DESIGN E DESENVOLVIMENTO POR <a href="https://www.youtube.com/@CaOK_PaiN" target="_blank" style="text-decoration: none; color: inherit;"><b>[CAOK] PAIN</b></a></span>
-    <br><span>Versão 1.35</span>
+    <br><span>Versão 1.36</span>
 </div>
 
 <script>
@@ -424,7 +422,7 @@ function makeMC(id,label,isAdmin,w,h){
 function processNextEvent(){
   if(curEvIdx >= simEvents.length) {
       console.log('Draft finalizado!');
-      return; // Headers mantêm-se abertos no fim
+      return; 
   }
   
   var ev  = simEvents[curEvIdx];
@@ -469,16 +467,20 @@ function revealCard(ev, act, tp, isH, isAdmin, pN, tEl){
   var img  = tp==='god' ? getGodImg(id) : getMapImg(id);
   var imgH = img ? '<img src="'+img+'">' : '';
 
-  // ─── LÓGICA DO SPLASH ART POP-UP (FIXO 30%) ───
+  // ─── LÓGICA DO SPLASH ART COM ENTRADA E SAÍDA ───
   if(act === 'pick' && tp === 'god') {
       var elSplash = document.getElementById(isH ? 'splashL' : 'splashR');
       var splashUrl = norm(name) + '.png'; 
       
+      // 1. Remove a imagem atual (ela sai deslizando)
       elSplash.classList.remove('show');
+      
+      // 2. Espera ela sair da tela para trocar a foto e entrar com a nova
       setTimeout(function(){
           elSplash.style.backgroundImage = 'url("' + splashUrl + '")';
+          // Se quiser testar o delay de carregamento, force a opacidade aqui
           elSplash.classList.add('show');
-      }, 400); 
+      }, 500); // 500ms é o tempo suficiente para a animação de saída terminar
   }
   // ───────────────────────────────────
 
@@ -492,14 +494,12 @@ function revealCard(ev, act, tp, isH, isAdmin, pN, tEl){
       elRect.classList.remove('closed');
       elRect.className = 'p-rect ' + (act === 'ban' ? 'ban-active' : 'pick-active');
       
-      // NOVA LÓGICA DO HEADER LOCAL (COM PNG)
       var headerBg = tp === 'god' ? (norm(name) + '_h.png') : img;
       elRect.style.setProperty('--bg-img', headerBg ? 'url("' + headerBg + '")' : 'none');
       
       var prefix = act === 'ban' ? '✕ BANIU: ' : '✓ ESCOLHEU: ';
       elAct.textContent = prefix + name.toUpperCase();
 
-      // FECHAMENTO SUAVE APÓS 4.5s
       timerIds.push(setTimeout(function() {
           elRect.className = 'p-rect closed';
       }, 4500));
