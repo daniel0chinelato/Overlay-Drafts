@@ -126,7 +126,7 @@ html,body{
 
 /* ══ BANS ══ */
 .bans-master{display:flex;align-items:center;justify-content:center;gap:0;padding:0 20px;margin-bottom:20px;}
-.bans-Divider{width:1px;height:60px;background:rgba(255,255,255,.12);margin:0 20px;flex-shrink:0;}
+.bans-divider{width:1px;height:60px;background:rgba(255,255,255,.12);margin:0 20px;flex-shrink:0;}
 .bans-type-label{font-family:var(--FT);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);margin-right:4px;flex-shrink:0;}
 .bc{width:48px;height:48px;border-radius:50%;border:2px solid #ef4444;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(0,0,0,.4);}
 .bc img{width:100%;height:100%;object-fit:cover;opacity:.45;filter:grayscale(1);}
@@ -233,7 +233,7 @@ html,body{
 
 <div class="ftr">
     <span>DESIGN E DESENVOLVIMENTO POR <a href="https://www.youtube.com/@CaOK_PaiN" target="_blank" style="text-decoration: none; color: inherit;"><b>[CAOK] PAIN</b></a></span>
-    <br><span>Versão 1.36</span>
+    <br><span>Versão 1.38</span>
 </div>
 
 <script>
@@ -472,15 +472,30 @@ function revealCard(ev, act, tp, isH, isAdmin, pN, tEl){
       var elSplash = document.getElementById(isH ? 'splashL' : 'splashR');
       var splashUrl = norm(name) + '.png'; 
       
-      // 1. Remove a imagem atual (ela sai deslizando)
-      elSplash.classList.remove('show');
-      
-      // 2. Espera ela sair da tela para trocar a foto e entrar com a nova
-      setTimeout(function(){
-          elSplash.style.backgroundImage = 'url("' + splashUrl + '")';
-          // Se quiser testar o delay de carregamento, force a opacidade aqui
-          elSplash.classList.add('show');
-      }, 500); // 500ms é o tempo suficiente para a animação de saída terminar
+      // Criamos a função que dispara a animação de entrada com a nova foto
+      var dispararAnimacao = function() {
+          // Preloader da imagem para não pular a animação no navegador
+          var imgLoader = new Image();
+          imgLoader.onload = function() {
+              elSplash.style.backgroundImage = 'url("' + splashUrl + '")';
+              elSplash.classList.add('show');
+          };
+          imgLoader.onerror = function() {
+              // Se falhar o carregamento (ex: nome errado), tenta forçar a exibição
+              elSplash.style.backgroundImage = 'url("' + splashUrl + '")';
+              elSplash.classList.add('show');
+          };
+          imgLoader.src = splashUrl;
+      };
+
+      if (elSplash.classList.contains('show')) {
+          // Se já tem um deus, recua ele, espera 600ms e depois puxa o novo
+          elSplash.classList.remove('show');
+          setTimeout(dispararAnimacao, 600);
+      } else {
+          // Se a tela estiver limpa, puxa o novo na mesma hora
+          dispararAnimacao();
+      }
   }
   // ───────────────────────────────────
 
